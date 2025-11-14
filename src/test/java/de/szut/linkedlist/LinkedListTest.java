@@ -2,8 +2,11 @@ package de.szut.linkedlist;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class LinkedListTest {
@@ -34,16 +37,26 @@ public class LinkedListTest {
 
     @Test
     void givenListSizeOne_WhenAdd_ThenReturnValidValuesAndSizeTwo(){
-        list.add(6);
-        list.add(7);
+        givenAList(6, 7);
         assertThat(list.size()).isEqualTo(2);
         assertThat(list.get(0)).isEqualTo(6);
         assertThat(list.get(1)).isEqualTo(7);
     }
 
     @Test
-    void givenListEmptyList_WhenRemove_ThenReturnNull(){
-        assertThat(list.remove(0)).isEqualTo(null);
+    void givenListEmptyList_WhenRemove_ThenThrowIllegalArgumentException(){
+        Exception ex = assertThrows(IllegalArgumentException.class,
+                () -> this.list.remove(0));
+        assertThat(ex.getMessage()).isEqualTo("Index 0 out of bounds.");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 1, 9})
+    void givenListWithOneElement_WhenRemoveWithInvalidIndex_ThenThrowIllegalArgumentException(int index){
+        list.add(6);
+        Exception ex = assertThrows(IllegalArgumentException.class,
+                () -> this.list.remove(index));
+        assertThat(ex.getMessage()).isEqualTo("Index " + index + " out of bounds.");
     }
 
     @Test
@@ -54,14 +67,17 @@ public class LinkedListTest {
     }
 
     @Test
-    @Disabled
     void givenListContainingThreeValues_WhenRemoveAtIndexOne_ThenSizeIsTwoAndReturnValidValues(){
-        list.add(6);
-        list.add(7);
-        list.add(3);
+        givenAList(6, 7, 3);
         list.remove(1);
         assertThat(list.size()).isEqualTo(2);
         assertThat(list.get(0)).isEqualTo(6);
         assertThat(list.get(1)).isEqualTo(3);
+    }
+
+    void givenAList(Integer ... elements){
+        for(Integer element : elements){
+            this.list.add(element);
+        }
     }
 }

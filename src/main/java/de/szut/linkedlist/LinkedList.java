@@ -41,15 +41,23 @@ public class LinkedList<T> {
     }
 
     public T remove(int index) {
-        if(isEmpty()){
-            return null;
+        if(index < 0 || index >= this.size){
+            throw new IllegalArgumentException("Index " + index + " out of bounds.");
+        }
+        Node current = first;
+        Node previous = null;
+        for(int i = 0; i < index; i++){
+            previous = current;
+            current = current.next;
+        }
+        if(previous == null){
+            this.first = this.first.next;
         }
         else{
-            Node current = first;
-            first = null;
-            this.size--;
-            return current.value;
+            previous.next = current.next;
         }
+        this.size--;
+        return current.value;
     }
 
     private class Node {
